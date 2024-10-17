@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:unshelf_admin/views/approval_request_view.dart';
 import 'package:unshelf_admin/views/home_view.dart';
 import 'package:unshelf_admin/views/login_view.dart';
+import 'package:unshelf_admin/views/register_view.dart';
 import 'package:unshelf_admin/views/usermanagement_view.dart';
 
 void main() async {
@@ -39,12 +40,13 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.jostTextTheme(Theme.of(context).textTheme)
             .apply(bodyColor: const Color.fromARGB(255, 56, 102, 65)),
       ),
-      initialRoute: FirebaseAuth.instance.currentUser != null ? '/home' : '/home',
+      initialRoute: FirebaseAuth.instance.currentUser != null ? '/home' : '/login',
       routes: {
         '/home': (context) => HomeView(),   
         '/login': (context) => LoginView(),
         '/users': (context) => UsersManagementView(),
-         '/approval_requests': (context) => ApprovalRequestsView(),
+        '/approval_requests': (context) => ApprovalRequestsView(),
+        '/register': (context) => RegisterView(),
       },
     );
   }

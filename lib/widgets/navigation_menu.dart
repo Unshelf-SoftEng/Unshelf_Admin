@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class NavigationMenu extends StatelessWidget {
   @override
@@ -47,11 +48,29 @@ class NavigationMenu extends StatelessWidget {
               // Navigate to Reports
             },
           ),
+           ListTile(
+            leading: const Icon(Icons.app_registration_rounded),
+            title: const Text('Register'),
+            onTap: () {
+               Navigator.pushReplacementNamed(context, '/register');
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
-            onTap: () {
-              // Logout functionality
+            onTap: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Logged out successfully')),
+                );
+                // Navigate to the login screen or any other desired screen
+                Navigator.pushReplacementNamed(context, '/login'); // Adjust the route name as needed
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Logout failed. Please try again.')),
+                );
+              }
             },
           ),
         ],
