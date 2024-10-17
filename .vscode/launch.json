@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "unshelf_admin",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "unshelf_admin (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "unshelf_admin (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Flutter (web)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+              "--dart-define=FIREBASE_API_KEY=AIzaSyC0BHSDm6UjGfPfbp1uI6CxOXOBnnWNLyI",
+              "--dart-define=FIREBASE_APP_ID=1:733152787617:web:3c3e7b87d0cb7c59f544e0",
+              "--dart-define=FIREBASE_MESSAGING_SENDER_ID=733152787617",
+              "--dart-define=FIREBASE_PROJECT_ID=unshelf-d4567",
+              "--dart-define=FIREBASE_STORAGE_BUCKET=unshelf-d4567.appspot.com"
+            ],
+            "program": "lib/main.dart"
+        }
+    ]
+}
