@@ -13,12 +13,13 @@ class _ApprovalRequestsViewState extends State<ApprovalRequestsView> {
   String searchQuery = ''; // For searching
 
   Stream<List<Map<String, dynamic>>> _fetchRequests() {
-    return _firestore.collection('approval_requests').snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) {
+    return _firestore.collection('approval_requests').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
         return data;
-      }).toList());
+      }).toList();
+    });
   }
 
   List<Map<String, dynamic>> _filterRequests(List<Map<String, dynamic>> requests) {
@@ -31,25 +32,27 @@ class _ApprovalRequestsViewState extends State<ApprovalRequestsView> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Request Approval'),
-          content: const Text('Approve the sellers application?'),
+          content: const Text('Approve the seller\'s application?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context), // Close the dialog
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // Logic to approve the request
-              _firestore.collection('approval_requests').doc(requestId).update({'status': 'Approved'}).then((_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Request approved successfully!')),
-                );
-              }).catchError((error) {
-                // Handle any errors that occur during the update
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error approving request: $error')),
-                );
-              });
+                try {
+                  await _firestore.collection('approval_requests').doc(requestId).update({'status': 'Approved'});
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Request approved successfully!')),
+                  );
+                  Navigator.pop(context); // Close the dialog after approval
+                } catch (error) {
+                  // Handle any errors that occur during the update
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error approving request: $error')),
+                  );
+                }
               },
               child: const Text('Approve'),
             ),
@@ -60,41 +63,95 @@ class _ApprovalRequestsViewState extends State<ApprovalRequestsView> {
   }
 
   void _rejectRequest(String requestId) {
-      showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Request Rejection'),
-          content: const Text('Reject the sellers application?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context), // Close the dialog
-              child: const Text('Cancel'),
+  // Variable to hold the rejection reason
+  String rejectionReason = '';
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Request Rejection'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min, // Allow the dialog to adjust its size
+          children: [
+            const Text('Reject the seller\'s application?'),
+            const SizedBox(height: 16.0), // Add some spacing
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Reason for Rejection',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                rejectionReason = value; // Capture the rejection reason
+              },
             ),
-            TextButton(
-              onPressed: () {
-                // Logic to reject the request
-              _firestore.collection('approval_requests').doc(requestId).update({'status': 'Rejected'}).then((_) {
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // Close the dialog
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Logic to reject the request with the reason
+              if (rejectionReason.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please provide a reason for rejection.')),
+                );
+                return; // Do not proceed if the reason is empty
+              }
+
+              try {
+                await _firestore.collection('approval_requests').doc(requestId).update({
+                  'status': 'Rejected',
+                  'rejectionReason': rejectionReason, // Store the rejection reason
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Request rejected successfully!')),
                 );
-              }).catchError((error) {
+                Navigator.pop(context); // Close the dialog after rejection
+              } catch (error) {
                 // Handle any errors that occur during the update
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error rejecting request: $error')),
                 );
-              });
-              },
-              child: const Text('Reject'),
+              }
+            },
+            child: const Text('Reject'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  void _viewDetails(Map<String, dynamic> request) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Request Details'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text('Name: ${request['name']}'),
+                Text('Email: ${request['email']}'),
+                Text('Status: ${request['status']}'),
+                // Add more fields as necessary
+                Text('Additional Info: ${request['additionalInfo'] ?? 'N/A'}'), // Example of an additional field
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // Close the dialog
+              child: const Text('Close'),
             ),
           ],
         );
       },
     );
-  }
-
-  void _viewDetails(Map<String, dynamic> request) {
-    // Logic to view request details
   }
 
   @override
@@ -181,7 +238,7 @@ class _ApprovalRequestsViewState extends State<ApprovalRequestsView> {
                                     ),
                                     IconButton(
                                       icon: const Icon(Icons.info),
-                                      onPressed: () => _viewDetails(request),
+                                      onPressed: () => _viewDetails(request), // View details
                                     ),
                                   ],
                                 ),

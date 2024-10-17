@@ -99,7 +99,7 @@ class _RegisterViewState extends State<RegisterView> {
                     Center(
                       child: Image.network(
                         'https://firebasestorage.googleapis.com/v0/b/unshelf-d4567.appspot.com/o/Unshelf.png?alt=media&token=ea449292-f36d-4dfe-a90a-2bef5c341694',
-                        height: 100,
+                        height: 200,
                       ),
                     ),
                     SizedBox(height: 40),
