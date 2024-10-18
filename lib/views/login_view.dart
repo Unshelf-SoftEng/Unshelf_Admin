@@ -30,6 +30,15 @@ class _LoginViewState extends State<LoginView> {
         DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
         
         if (userDoc.exists) {
+          // Check if the user is banned
+           bool banned= userDoc['isBanned'];
+          if (banned == true) {
+            await FirebaseAuth.instance.signOut(); // Sign out the banned user
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Your account is banned. Please contact support.')),
+            );
+            return;
+          }
           String role = userDoc['type'];
           if (role == 'admin') {
             ScaffoldMessenger.of(context).showSnackBar(
