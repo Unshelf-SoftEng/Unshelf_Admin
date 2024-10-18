@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:unshelf_admin/viewmodels/analytics_viewmodel.dart';
+import 'package:unshelf_admin/viewmodels/approval_request_viewmodel.dart';
+import 'package:unshelf_admin/viewmodels/report_viewmodel.dart';
+import 'package:unshelf_admin/viewmodels/user_viewmodel.dart';
 import 'package:unshelf_admin/views/analytics_view.dart';
 import 'package:unshelf_admin/views/approval_request_view.dart';
 import 'package:unshelf_admin/views/home_view.dart';
@@ -25,7 +30,17 @@ void main() async {
     ),
   );
 
-  runApp(const MyApp());
+   runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UsersManagementViewModel()),
+        ChangeNotifierProvider(create: (_) => ReportsViewModel()),
+        ChangeNotifierProvider(create: (_) => ApprovalRequestsViewModel()),
+        ChangeNotifierProvider(create: (_) => AnalyticsViewModel()),
+      ],
+      child: MyApp(),
+    ),
+   );
 }
 
 class MyApp extends StatelessWidget {
