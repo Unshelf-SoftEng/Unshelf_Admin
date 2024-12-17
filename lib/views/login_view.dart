@@ -62,6 +62,7 @@ class _LoginViewState extends State<LoginView> {
             const SnackBar(content: Text('User not found in database.')),
           );
         }
+        
       } on FirebaseAuthException catch (e) {
         String message;
         if (e.code == 'user-not-found') {

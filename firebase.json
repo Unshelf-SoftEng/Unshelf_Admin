@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "site": "unshelf-d4567-5533a",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+    
+  }
+}

@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:unshelf_admin/views/analytics_view.dart';
+import 'package:unshelf_admin/views/approval_request_view.dart';
+import 'package:unshelf_admin/views/home_view.dart';
+import 'package:unshelf_admin/views/login_view.dart';
+import 'package:unshelf_admin/views/register_view.dart';
+import 'package:unshelf_admin/views/report_view.dart';
+import 'package:unshelf_admin/views/usermanagement_view.dart';
 
 class NavigationMenu extends StatelessWidget {
   @override
@@ -24,49 +31,48 @@ class NavigationMenu extends StatelessWidget {
             leading: const Icon(Icons.dashboard),
             title: const Text('Dashboard'),
             onTap: () {
-                 Navigator.pushReplacementNamed(context, '/home');
+              _navigateWithFade(context, '/home');
             },
           ),
           ListTile(
             leading: const Icon(Icons.people),
             title: const Text('Users'),
             onTap: () {
-                 Navigator.pushReplacementNamed(context, '/users');
+              _navigateWithFade(context, '/users');
             },
           ),
           ListTile(
             leading: const Icon(Icons.approval),
             title: const Text('Approval Requests'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/approval_requests');
+              _navigateWithFade(context, '/approval_requests');
             },
           ),
           ListTile(
             leading: const Icon(Icons.support_agent),
             title: const Text('Reports'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/reports');
+              _navigateWithFade(context, '/reports');
             },
           ),
           ListTile(
             leading: const Icon(Icons.analytics),
             title: const Text('Analytics'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/analytics');
+              _navigateWithFade(context, '/analytics');
             },
           ),
-           ListTile(
+          ListTile(
             leading: const Icon(Icons.app_registration_rounded),
             title: const Text('Register'),
             onTap: () {
-               Navigator.pushReplacementNamed(context, '/register');
+              _navigateWithFade(context, '/register');
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
             onTap: () async {
-              // Show confirmation dialog
               bool? confirmLogout = await showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
@@ -76,13 +82,13 @@ class NavigationMenu extends StatelessWidget {
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(false); // Return false on cancel
+                          Navigator.of(context).pop(false);
                         },
                         child: const Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(true); // Return true on confirm
+                          Navigator.of(context).pop(true);
                         },
                         child: const Text('Confirm'),
                       ),
@@ -91,18 +97,16 @@ class NavigationMenu extends StatelessWidget {
                 },
               );
 
-              // If user confirms, log out
               if (confirmLogout == true) {
                 try {
                   await FirebaseAuth.instance.signOut();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Logged out successfully')),
+                    const SnackBar(content: Text('Logged out successfully')),
                   );
-                  // Navigate to the login screen or any other desired screen
-                  Navigator.pushReplacementNamed(context, '/login'); // Adjust the route name as needed
+                  _navigateWithFade(context, '/login');
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Logout failed. Please try again.')),
+                    const SnackBar(content: Text('Logout failed. Please try again.')),
                   );
                 }
               }
@@ -111,5 +115,48 @@ class NavigationMenu extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _navigateWithFade(BuildContext context, String routeName) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            _getRouteWidget(routeName),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = 0.0;
+          const end = 1.0;
+          const curve = Curves.easeInOut;
+
+          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          final fadeAnimation = animation.drive(tween);
+
+          return FadeTransition(
+            opacity: fadeAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _getRouteWidget(String routeName) {
+    switch (routeName) {
+      case '/home':
+        return HomeView();
+      case '/users':
+        return UsersManagementView();
+      case '/approval_requests':
+        return ApprovalRequestsView();
+      case '/reports':
+        return ReportsView();
+      case '/analytics':
+        return AnalyticsView();
+      case '/register':
+        return RegisterView();
+      case '/login':
+        return LoginView();
+      default:
+        return HomeView(); // Default to home screen
+    }
   }
 }

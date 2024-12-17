@@ -25,8 +25,8 @@ void main() async {
       projectId: "unshelf-d4567",
       storageBucket: "unshelf-d4567.appspot.com",
       messagingSenderId: "733152787617",
-      appId: "1:733152787617:web:87785f704ad9420af544e0",
-      measurementId: "G-VXPZ8FH1T7"
+      appId: "1:733152787617:web:32e6108d8e6b56adf544e0",
+      measurementId: "G-C1JE4LKJCE"
     ),
   );
 
